@@ -6,20 +6,28 @@ import io.nuls.contract.sdk.Msg;
 import io.nuls.contract.sdk.annotation.Payable;
 import io.nuls.contract.sdk.annotation.View;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 import static io.nuls.contract.sdk.Utils.emit;
 import static io.nuls.contract.sdk.Utils.require;
 
 public class Crowdsale {
 
-    private Address token;//代币地址
+    // 代币地址
+    private Address token;
 
-    private Address wallet;//打到众筹币的钱包
+    // 众筹NULS的钱包
+    private Address wallet;
 
-    private BigInteger rate;
+    private BigDecimal rate;
 
-    private BigInteger nulsRaised = BigInteger.ZERO;//实际筹到的钱
+    // 实际筹到的钱
+    private BigDecimal nulsRaised = BigDecimal.ZERO;
+
+    // token的最大支持的小数位数
+    private int decimals;
+
+    private boolean isRetriveTokenDecimals = false;
 
     @View
     public Address getToken() {
@@ -33,12 +41,12 @@ public class Crowdsale {
 
 
     @View
-    public BigInteger getRate() {
+    public BigDecimal getRate() {
         return rate;
     }
 
     @View
-    public BigInteger getNulsRaised() {
+    public BigDecimal getNulsRaised() {
         return nulsRaised;
     }
 
@@ -47,15 +55,20 @@ public class Crowdsale {
      */
     class TokenPurchaseEvent implements Event {
 
-        private Address purchaser;//买方
+        // 买方
+        private Address purchaser;
 
-        private Address beneficiary;//受益人（可能是代买受益人可能是自己或者他人）
+        // 受益人（可能是代买受益人可能是自己或者他人）
+        private Address beneficiary;
 
-        private BigInteger value;
-       //数量
-        private BigInteger amount;
+        // 花费的NULS
+        private BigDecimal value;
 
-        public TokenPurchaseEvent(Address purchaser, Address beneficiary, BigInteger value, BigInteger amount) {
+        // token数量
+        private BigDecimal amount;
+
+
+        public TokenPurchaseEvent(Address purchaser, Address beneficiary, BigDecimal value, BigDecimal amount) {
             this.purchaser = purchaser;
             this.beneficiary = beneficiary;
             this.value = value;
@@ -78,19 +91,19 @@ public class Crowdsale {
             this.beneficiary = beneficiary;
         }
 
-        public BigInteger getValue() {
+        public BigDecimal getValue() {
             return value;
         }
 
-        public void setValue(BigInteger value) {
+        public void setValue(BigDecimal value) {
             this.value = value;
         }
 
-        public BigInteger getAmount() {
+        public BigDecimal getAmount() {
             return amount;
         }
 
-        public void setAmount(BigInteger amount) {
+        public void setAmount(BigDecimal amount) {
             this.amount = amount;
         }
 
@@ -121,15 +134,15 @@ public class Crowdsale {
             return "TokenPurchaseEvent{" +
                     "purchaser=" + purchaser +
                     ", beneficiary=" + beneficiary +
-                    ", value=" + value +
-                    ", amount=" + amount +
+                    ", value=" + (value != null ? value.toPlainString() : "0") +
+                    ", amount=" + (amount != null ? amount.toPlainString() : "0") +
                     '}';
         }
 
     }
 
-    public Crowdsale(BigInteger rate, Address wallet, Address token) {
-        require(rate != null && rate.compareTo(BigInteger.ZERO) > 0);
+    public Crowdsale(BigDecimal rate, Address wallet, Address token) {
+        require(rate != null && rate.compareTo(BigDecimal.ZERO) > 0);
         require(wallet != null);
         require(token != null);
 
@@ -138,30 +151,28 @@ public class Crowdsale {
         this.token = token;
     }
 
-//    function () external payable {
-//        buyTokens(msg.sender);
-//    }
-
     /**
      * 买代币(为什么传受益人beneficiary 可能是代买的情况)
+     *
      * @param beneficiary
      */
     @Payable
     public void buyTokens(Address beneficiary) {
         //随消息发送的Na数 2nuls=2*10^8na
-        BigInteger amount = Msg.value();
+        // BigInteger amount = Msg.value();
+        BigDecimal amount = new BigDecimal(Msg.value());
         //转成nuls
-        BigInteger nuls= amount.divide(BigInteger.valueOf(100000000));
-        //验证地址 不为空  weiAmount不为空 大于0
+        BigDecimal nuls = amount.divide(new BigDecimal(100000000));
+        //验证地址 不为空  amount不为空 大于0
         preValidatePurchase(beneficiary, nuls);
-        //weiAmount*rate
-        BigInteger tokens = getTokenAmount(nuls);
+        //amount*rate*10^decimal
+        BigDecimal tokens = getTokenAmount(nuls);
         //加上发送的数量
         nulsRaised = nulsRaised.add(nuls);
         //调用  （address）token.call 给beneficiary 代币
         processPurchase(beneficiary, tokens);
         //发送事件 Msg.sender()创建合约的地址 私钥导入的
-        emit(new TokenPurchaseEvent(Msg.sender(),beneficiary, nuls, tokens));
+        emit(new TokenPurchaseEvent(Msg.sender(), beneficiary, nuls, tokens));
 
         updatePurchasingState(beneficiary, nuls);
         //合约向wallet转账
@@ -169,34 +180,48 @@ public class Crowdsale {
         postValidatePurchase(beneficiary, nuls);
     }
 
-    protected void preValidatePurchase(Address beneficiary, BigInteger weiAmount) {
-        require(beneficiary != null,"beneficiary != null");
-        require(weiAmount != null && weiAmount.compareTo(BigInteger.ZERO) > 0,"weiAmount != null && weiAmount.compareTo(BigInteger.ZERO) > 0");
+    protected void preValidatePurchase(Address beneficiary, BigDecimal amount) {
+        require(beneficiary != null, "beneficiary != null");
+        require(amount != null && amount.compareTo(BigDecimal.ZERO) > 0, "amount require and amount.compareTo(BigDecimal.ZERO) > 0");
     }
 
-    protected void postValidatePurchase(Address beneficiary, BigInteger weiAmount) {
+    protected void postValidatePurchase(Address beneficiary, BigDecimal amount) {
         // optional override
     }
 
-    protected void deliverTokens(Address beneficiary, BigInteger tokenAmount) {
+    protected int getTokenDecimals() {
+        if(!isRetriveTokenDecimals) {
+            try {
+                String decimal = token.callWithReturnValue("decimals", null, null, null);
+                int dec = Integer.valueOf(decimal);
+                this.decimals = dec;
+                isRetriveTokenDecimals = true;
+            } catch (Exception e) {
+                require(false, "Illegal token address.");
+            }
+        }
+        return this.decimals;
+    }
+
+    protected void deliverTokens(Address beneficiary, BigDecimal tokenAmount) {
         String[][] args = new String[][]{{beneficiary.toString()}, {tokenAmount.toString()}};
         token.call("transfer", null, args, null);
     }
 
-    protected void processPurchase(Address beneficiary, BigInteger tokenAmount) {
+    protected void processPurchase(Address beneficiary, BigDecimal tokenAmount) {
         deliverTokens(beneficiary, tokenAmount);
     }
 
-    protected void updatePurchasingState(Address beneficiary, BigInteger weiAmount) {
+    protected void updatePurchasingState(Address beneficiary, BigDecimal amount) {
         // optional override
     }
 
-    protected BigInteger getTokenAmount(BigInteger wei) {
-        return wei.multiply(rate);
+    protected BigDecimal getTokenAmount(BigDecimal amount) {
+        return amount.multiply(rate).scaleByPowerOfTen(getTokenDecimals());
     }
+
     //合约向wallet转账
     protected void forwardFunds() {
-       // require(-1 > 0,wallet+"####Msg.value()="+Msg.value());
         wallet.transfer(Msg.value());
     }
 

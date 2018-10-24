@@ -16,24 +16,28 @@ import static io.nuls.contract.sdk.Utils.require;
 
 
 /**
- *可退款的众筹 记录了状态  哪个地址给了多少钱  众筹的钱包
+ * 可退款的众筹 记录了状态  哪个地址给了多少钱  众筹的钱包
  */
 public class RefundVault extends OwnableImpl {
 
-    public int Active = 1;//激活
-    public int Refunding = 2;//退款
-    public int Closed = 3;//关闭
+    // 激活
+    public int Active = 1;
+    // 退款
+    public int Refunding = 2;
+    // 关闭
+    public int Closed = 3;
     /**
      * 存放
      */
     private Map<Address, BigInteger> deposited = new HashMap<Address, BigInteger>();
-    //众筹的钱包
+    // 众筹的钱包
     private Address wallet;
-    //状态
+    // 状态
     private int state;
 
     /**
-     *  获取这个address众筹金额
+     * 获取这个address众筹金额
+     *
      * @param address
      * @return
      */
@@ -50,6 +54,7 @@ public class RefundVault extends OwnableImpl {
     public Address getWallet() {
         return wallet;
     }
+
     @View
     public Map<Address, BigInteger> getDepositedMap() {
         return deposited;
@@ -70,19 +75,22 @@ public class RefundVault extends OwnableImpl {
 
     class Refunded implements Event {
 
-        private Address beneficiary;//退款地址
-        private BigInteger weiAmount;//多少币
+        // 退款地址
+        private Address beneficiary;
 
-        public Refunded(Address beneficiary, BigInteger weiAmount) {
+        // 多少币
+        private BigInteger amount;
+
+        public Refunded(Address beneficiary, BigInteger amount) {
             this.beneficiary = beneficiary;
-            this.weiAmount = weiAmount;
+            this.amount = amount;
         }
 
         @Override
         public String toString() {
             return "Refunded{" +
                     "beneficiary=" + beneficiary +
-                    ", weiAmount=" + weiAmount +
+                    ", amount=" + amount +
                     '}';
         }
 
@@ -95,13 +103,14 @@ public class RefundVault extends OwnableImpl {
     }
 
     /**
-     *  这个地址存放多少钱
+     * 这个地址存放多少钱
+     *
      * @param investor
      */
     @Payable
     public void deposit(Address investor) {
-       //onlyOwner();
-        require(state == Active,"state == Active");
+        //onlyOwner();
+        require(state == Active, "state == Active");
         BigInteger value = deposited.get(investor);
         if (value == null) {
             value = BigInteger.ZERO;
@@ -125,17 +134,18 @@ public class RefundVault extends OwnableImpl {
      */
     public void enableRefunds() {
         onlyOwner();
-        require(state == Active,"state == Active");
+        require(state == Active, "state == Active");
         state = Refunding;
         emit(new RefundsEnabled());
     }
 
     /**
-     *  退款给这个地址
+     * 退款给这个地址
+     *
      * @param investor
      */
     public void refund(Address investor) {
-        require(state == Refunding);
+        require(state == Refunding, "state == Refunding");
         BigInteger depositedValue = deposited.get(investor);
         if (depositedValue == null) {
             depositedValue = BigInteger.ZERO;

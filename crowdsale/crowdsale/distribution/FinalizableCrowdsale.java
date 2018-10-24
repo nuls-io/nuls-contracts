@@ -6,6 +6,7 @@ import io.nuls.contract.sdk.Event;
 import io.nuls.contract.sdk.annotation.View;
 import ownership.Ownable;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static io.nuls.contract.sdk.Utils.emit;
@@ -29,8 +30,8 @@ public abstract class FinalizableCrowdsale extends TimedCrowdsale implements Own
 
     public void finalized() {
         onlyOwner();
-        require(!isFinalized,"!isFinalized");
-        require(hasClosed(),"hasClosed()");
+        require(!isFinalized, "finalized");
+        require(!hasClosed(), "closed");
 
         finalization();
         emit(new Finalized());
@@ -41,7 +42,7 @@ public abstract class FinalizableCrowdsale extends TimedCrowdsale implements Own
     protected void finalization() {
     }
 
-    public FinalizableCrowdsale(long openingTime, long closingTime, BigInteger rate, Address wallet, Address token) {
+    public FinalizableCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token) {
         super(openingTime, closingTime, rate, wallet, token);
     }
 

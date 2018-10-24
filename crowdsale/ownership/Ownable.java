@@ -12,10 +12,12 @@ public interface Ownable {
     void transferOwnership(Address newOwner);
 
     void renounceOwnership();
-     //放弃拥有者
+
+    //放弃拥有者
     class OwnershipRenouncedEvent implements Event {
 
-        private Address previousOwner;//先前拥有者
+        //先前拥有者
+        private Address previousOwner;
 
         public OwnershipRenouncedEvent(Address previousOwner) {
             this.previousOwner = previousOwner;
@@ -58,9 +60,11 @@ public interface Ownable {
      */
     class OwnershipTransferredEvent implements Event {
 
-        private Address previousOwner;//先前拥有者
+        //先前拥有者
+        private Address previousOwner;
 
-        private Address newOwner;//新的拥有者
+        //新的拥有者
+        private Address newOwner;
 
         public OwnershipTransferredEvent(Address previousOwner, Address newOwner) {
             this.previousOwner = previousOwner;
