@@ -19,8 +19,7 @@ public abstract class FinalizableCrowdsale extends TimedCrowdsale implements Own
 
     private boolean isFinalized = false;
 
-    @View
-    public boolean isFinalized() {
+    protected boolean isFinalized() {
         return isFinalized;
     }
 
@@ -30,19 +29,18 @@ public abstract class FinalizableCrowdsale extends TimedCrowdsale implements Own
 
     public void finalized() {
         onlyOwner();
-        require(!isFinalized, "finalized");
-        require(!hasClosed(), "closed");
+        require(!isFinalized, "It has been finalized.");
+        require(!hasClosed(), "It has been closed.");
 
-        finalization();
         emit(new Finalized());
-
         isFinalized = true;
     }
 
     protected void finalization() {
+        finalized();
     }
 
-    public FinalizableCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token) {
+    protected FinalizableCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token) {
         super(openingTime, closingTime, rate, wallet, token);
     }
 

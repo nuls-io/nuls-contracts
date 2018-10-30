@@ -31,17 +31,20 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
     @Override
     @Payable
     public void _payable() {
-        //众筹目标钱包不能转给众筹合约
+        //众筹归集钱包不能购买代币
         if (!Msg.sender().equals(getWallet())) {
             //众筹在规定的之间内
             super.onlyWhileOpen();
-            //是否手动关闭
-            require(!isFinalized(), "finalized!");
+            //是否关闭
+            require(!isFinalized(), "It has been over!");
             //是否达到预定值
             require(!super.goalReached(), "goal reached!");
             super.buyTokens(Msg.sender());
             //保存这个地址 存了多少钱
             super.getVault().deposit(Msg.sender());
+        } else {
+            require(isFinalized(), "It hasn't been over yet!");
+            require(getWallet().equals(Msg.sender()), "The address must be the wallet address of this contract.");
         }
     }
 
@@ -52,9 +55,10 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
     }
 
     @Override
+    @View
     public void onlyOwner() {
-        //Msg.sender() 消息发送者地址
-        require(Msg.sender().equals(owner), "msg.sender not equals owner");
+        // 消息发送者地址
+        require(Msg.sender().equals(owner), "sender is not the owner");
     }
 
     /**
@@ -86,6 +90,8 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
      */
     @Payable
     public void buyTokens(Address beneficiary) {
+        //众筹归集钱包不能购买代币
+        require(!getWallet().equals(beneficiary), "The address can not buy token");
         //众筹在规定的之间内
         super.onlyWhileOpen();
         require(!isFinalized(), "finalized!");
@@ -108,16 +114,21 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
      * 允许退款（必须是自己创建的才能操作）
      */
     public void enableRefunds() {
+        onlyOwner();
         super.getVault().enableRefunds();
+        this.finalized();
     }
 
     /**
-     * 退款（给消息发送人） 首先要wallet钱包给众筹合约地址转账 然后调用 enableRefunds() 处于退款状态后 才能退款
+     * 退款（给消息发送人） 首先调用 enableRefunds() 处于退款状态后, 然后要wallet钱包给众筹合约地址转账 才能退款
      */
-    @Payable
     public void refund() {
-        super.getVault().refund(Msg.sender());
+        super.claimRefund();
+    }
 
+    @View
+    public boolean hasClosed() {
+        return super.hasClosed() || isFinalized();
     }
 
     /**

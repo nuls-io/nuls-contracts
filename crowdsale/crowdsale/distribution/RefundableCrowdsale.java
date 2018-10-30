@@ -22,23 +22,21 @@ public abstract class RefundableCrowdsale extends FinalizableCrowdsale {
         return goal;
     }
 
-    public RefundVault getVault() {
+    protected RefundVault getVault() {
         return vault;
     }
 
-    public RefundableCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token, BigDecimal goal) {
+    protected RefundableCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token, BigDecimal goal) {
         super(openingTime, closingTime, rate, wallet, token);
-        require(goal.compareTo(BigDecimal.ZERO) > 0);
+        require(goal.compareTo(BigDecimal.ZERO) > 0, "Goal amount must be greater than 0");
         vault = new RefundVault(wallet);
         this.goal = goal;
     }
 
 
-    public void claimRefund() {
+    protected void claimRefund() {
         //没有结束
-        require(isFinalized());
-        //没达到目标金额
-        require(!goalReached());
+        require(isFinalized(), "It hasn't been over yet!");
 
         //退款给 Msg.sender()
         vault.refund(Msg.sender());
@@ -53,17 +51,5 @@ public abstract class RefundableCrowdsale extends FinalizableCrowdsale {
     public boolean goalReached() {
         return getNulsRaised().compareTo(goal) >= 0;
     }
-
-    @Override
-    protected void finalization() {
-        if (goalReached()) {
-            vault.close();
-        } else {
-            vault.enableRefunds();
-        }
-
-        super.finalization();
-    }
-
 
 }

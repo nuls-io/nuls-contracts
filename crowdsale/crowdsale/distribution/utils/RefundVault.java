@@ -18,7 +18,7 @@ import static io.nuls.contract.sdk.Utils.require;
 /**
  * 可退款的众筹 记录了状态  哪个地址给了多少钱  众筹的钱包
  */
-public class RefundVault extends OwnableImpl {
+public class RefundVault {
 
     // 激活
     public int Active = 1;
@@ -107,9 +107,7 @@ public class RefundVault extends OwnableImpl {
      *
      * @param investor
      */
-    @Payable
     public void deposit(Address investor) {
-        //onlyOwner();
         require(state == Active, "state == Active");
         BigInteger value = deposited.get(investor);
         if (value == null) {
@@ -121,8 +119,7 @@ public class RefundVault extends OwnableImpl {
     /**
      * 关闭 众筹
      */
-    public void close() {
-        onlyOwner();
+    protected void close() {
         require(state == Active);
         state = Closed;
         emit(new Closed());
@@ -133,7 +130,6 @@ public class RefundVault extends OwnableImpl {
      * 允许退款
      */
     public void enableRefunds() {
-        onlyOwner();
         require(state == Active, "state == Active");
         state = Refunding;
         emit(new RefundsEnabled());
@@ -145,11 +141,10 @@ public class RefundVault extends OwnableImpl {
      * @param investor
      */
     public void refund(Address investor) {
-        require(state == Refunding, "state == Refunding");
+        require(state == Refunding, "state must be refunding");
         BigInteger depositedValue = deposited.get(investor);
-        if (depositedValue == null) {
-            depositedValue = BigInteger.ZERO;
-        }
+        require(depositedValue != null, "This address has not bought token");
+        require(depositedValue.compareTo(BigInteger.ZERO) > 0, "This address has been refunded.");
         deposited.put(investor, BigInteger.ZERO);
         investor.transfer(depositedValue);
         emit(new Refunded(investor, depositedValue));

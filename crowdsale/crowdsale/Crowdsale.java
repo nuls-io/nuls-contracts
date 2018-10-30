@@ -19,6 +19,7 @@ public class Crowdsale {
     // 众筹NULS的钱包
     private Address wallet;
 
+    // 兑换比例
     private BigDecimal rate;
 
     // 实际筹到的钱
@@ -141,7 +142,7 @@ public class Crowdsale {
 
     }
 
-    public Crowdsale(BigDecimal rate, Address wallet, Address token) {
+    protected Crowdsale(BigDecimal rate, Address wallet, Address token) {
         require(rate != null && rate.compareTo(BigDecimal.ZERO) > 0);
         require(wallet != null);
         require(token != null);
@@ -180,9 +181,15 @@ public class Crowdsale {
         postValidatePurchase(beneficiary, nuls);
     }
 
+    /**
+     * 预验证购买 看众筹是否关闭  验证beneficiary amount参数
+     *
+     * @param beneficiary
+     * @param amount
+     */
     protected void preValidatePurchase(Address beneficiary, BigDecimal amount) {
         require(beneficiary != null, "beneficiary != null");
-        require(amount != null && amount.compareTo(BigDecimal.ZERO) > 0, "amount require and amount.compareTo(BigDecimal.ZERO) > 0");
+        require(amount != null && amount.compareTo(BigDecimal.ZERO) > 0, "amount require and amount must be greater than 0");
     }
 
     protected void postValidatePurchase(Address beneficiary, BigDecimal amount) {
@@ -204,7 +211,7 @@ public class Crowdsale {
     }
 
     protected void deliverTokens(Address beneficiary, BigDecimal tokenAmount) {
-        String[][] args = new String[][]{{beneficiary.toString()}, {tokenAmount.toString()}};
+        String[][] args = new String[][]{{beneficiary.toString()}, {tokenAmount.toPlainString()}};
         token.call("transfer", null, args, null);
     }
 

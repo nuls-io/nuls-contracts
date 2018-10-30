@@ -25,34 +25,22 @@ public class TimedCrowdsale extends Crowdsale {
         return closingTime;
     }
 
-    public void onlyWhileOpen() {
-        require(Block.timestamp() >= openingTime && Block.timestamp() <= closingTime, "Block.timestamp() >= openingTime && Block.timestamp() <= closingTime");
+    protected void onlyWhileOpen() {
+        require(Block.timestamp() >= openingTime, "It hasn't been opened yet!");
+        require(Block.timestamp() <= closingTime, "It has been over!");
     }
 
-    public TimedCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token) {
+    protected TimedCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token) {
         super(rate, wallet, token);
-        // require(openingTime >= Block.timestamp(),"openingTime >= Block.timestamp()");
-        require(closingTime >= Block.timestamp(), "closingTime>= Block.timestamp()");
-        require(closingTime >= openingTime, "closingTime >= openingTime");
+        require(openingTime <= closingTime, "open time should be lower than close time");
+        require(closingTime >= Block.timestamp(), "close time cant't be lower than now");
 
         this.openingTime = openingTime;
         this.closingTime = closingTime;
     }
 
-    public boolean hasClosed() {
+    protected boolean hasClosed() {
         return Block.timestamp() > closingTime;
-    }
-
-    /**
-     * 预验证购买 看众筹是否关闭  验证beneficiary weiAmount参数
-     *
-     * @param beneficiary
-     * @param weiAmount
-     */
-    @Override
-    protected void preValidatePurchase(Address beneficiary, BigDecimal weiAmount) {
-        //onlyWhileOpen();
-        super.preValidatePurchase(beneficiary, weiAmount);
     }
 
 }
