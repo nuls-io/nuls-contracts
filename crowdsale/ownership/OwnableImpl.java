@@ -23,8 +23,7 @@ public class OwnableImpl implements Ownable {
         return owner;
     }
 
-    @Override
-    public void onlyOwner() {
+    protected void onlyOwner() {
         //判断合约使用者是不是合约拥有者，是合约拥有者才能执行
         require(Msg.sender().equals(owner), "sender is not the owner!");
     }

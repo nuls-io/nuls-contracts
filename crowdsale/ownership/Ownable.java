@@ -7,7 +7,7 @@ public interface Ownable {
 
     Address getOwner();
 
-    void onlyOwner();
+    //void onlyOwner();
 
     void transferOwnership(Address newOwner);
 

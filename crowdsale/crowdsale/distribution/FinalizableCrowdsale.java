@@ -27,8 +27,7 @@ public abstract class FinalizableCrowdsale extends TimedCrowdsale implements Own
 
     }
 
-    public void finalized() {
-        onlyOwner();
+    protected void finalized() {
         require(!isFinalized, "It has been finalized.");
         require(!hasClosed(), "It has been closed.");
 

@@ -54,9 +54,7 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
         return owner;
     }
 
-    @Override
-    @View
-    public void onlyOwner() {
+    protected void onlyOwner() {
         // 消息发送者地址
         require(Msg.sender().equals(owner), "sender is not the owner");
     }
@@ -107,6 +105,7 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
      * 停止众筹
      */
     public void finalized() {
+        onlyOwner();
         super.finalized();
     }
 
@@ -134,7 +133,6 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
     /**
      * 查看谁交了多少钱
      */
-    @View
     public Map<Address, BigInteger> detail() {
         onlyOwner();
         Map<Address, BigInteger> map = super.getVault().getDepositedMap();
