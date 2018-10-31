@@ -3,7 +3,7 @@ package contract;
 import contract.event.PixelBuyEvent;
 import contract.func.PixelInterface;
 import contract.model.PixelEntity;
-import contract.util.Money;
+import contract.util.Nuls;
 import io.nuls.contract.sdk.Address;
 import io.nuls.contract.sdk.Block;
 import io.nuls.contract.sdk.Contract;
@@ -23,7 +23,7 @@ import static io.nuls.contract.sdk.Utils.*;
  */
 public class PixelContract implements Contract, PixelInterface {
 
-    protected PixelEntity [][] pixels;
+    protected PixelEntity[][] pixels;
 
     private int count = 0;
     private byte status = START;
@@ -49,11 +49,11 @@ public class PixelContract implements Contract, PixelInterface {
         require(!tryStop(), "game over");
         PixelEntity pixelEntity = queryPixel(x,y);
         Address buyer = Msg.sender();
-        Money buyValue = Money.valueOf(Msg.value().longValue());
+        Nuls buyValue = Nuls.valueOf(Msg.value().longValue());
         Address currentOwner = pixelEntity.getCurrentOwner();
 
         //validate buyValue is enough
-        Money price = pixelEntity.getPrice();
+        Nuls price = pixelEntity.getPrice();
         require((price.value()) <= buyValue.value(), "buyValue not enough");
 
         if (currentOwner != null) {
@@ -92,6 +92,7 @@ public class PixelContract implements Contract, PixelInterface {
         return result;
     }
 
+    @Override
     public boolean tryStop(){
         long height = Block.currentBlockHeader().getHeight();
         if (buyHeight > 0 && height - buyHeight > 8640 && Msg.address().balance().longValue() > 0) {
@@ -100,17 +101,6 @@ public class PixelContract implements Contract, PixelInterface {
             return true;
         }
         return false;
-    }
-
-    /**
-     * 测试阶段保留，清空合约nuls余额，便于删除合约
-     * @return
-     */
-    public void clear(@Required String addr) {
-        Address contractAddress = Msg.address();
-        BigInteger balance = contractAddress.balance();
-        Address address = new Address(addr);
-        address.transfer(balance);
     }
 
 }
