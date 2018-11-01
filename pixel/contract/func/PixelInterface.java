@@ -1,8 +1,6 @@
 package contract.func;
 
 import contract.model.PixelEntity;
-import io.nuls.contract.sdk.Address;
-import io.nuls.contract.sdk.annotation.Required;
 
 public interface PixelInterface {
 
@@ -27,5 +25,11 @@ public interface PixelInterface {
      * @return
      */
     String info();
+
+    /**
+     * used to get the bonus
+     * @return
+     */
+    boolean tryStop();
 
 }

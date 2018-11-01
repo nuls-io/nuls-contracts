@@ -1,6 +1,6 @@
 package contract.model;
 
-import contract.util.Money;
+import contract.util.Nuls;
 import io.nuls.contract.sdk.Address;
 
 import static contract.func.PixelConstant.INIT_PRICE;
@@ -10,7 +10,7 @@ public class PixelEntity {
     private Short x;
     private Short y;
     private Address currentOwner = null;
-    private Money price = INIT_PRICE;
+    private Nuls price = INIT_PRICE;
     private Short red = 199;
     private Short yellow = 72;
     private Short blue = 5;
@@ -39,11 +39,11 @@ public class PixelEntity {
         this.currentOwner = currentOwner;
     }
 
-    public Money getPrice() {
+    public Nuls getPrice() {
         return price;
     }
 
-    public void setPrice(Money price) {
+    public void setPrice(Nuls price) {
         this.price = price;
     }
 
