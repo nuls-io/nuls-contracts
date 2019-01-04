@@ -25,7 +25,7 @@ public class OwnableImpl implements Ownable {
 
     protected void onlyOwner() {
         //判断合约使用者是不是合约拥有者，是合约拥有者才能执行
-        require(Msg.sender().equals(owner), "sender is not the owner!");
+        require(Msg.sender().equals(owner), "The sender is not the owner!");
     }
 
     /**

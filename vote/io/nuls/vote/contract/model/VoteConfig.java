@@ -7,6 +7,7 @@ public class VoteConfig {
     private long startTime;
     private long endTime;
     private boolean isMultipleSelect;
+    private int minSelectCount;
     private int maxSelectCount;
     private boolean voteCanModify;
 
@@ -15,17 +16,19 @@ public class VoteConfig {
         this.endTime = endTime;
     }
 
-    public VoteConfig(long startTime, long endTime, boolean isMultipleSelect, int maxSelectCount) {
+    public VoteConfig(long startTime, long endTime, boolean isMultipleSelect, int minSelectCount, int maxSelectCount) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isMultipleSelect = isMultipleSelect;
+        this.minSelectCount = minSelectCount;
         this.maxSelectCount = maxSelectCount;
     }
 
-    public VoteConfig(long startTime, long endTime, boolean isMultipleSelect, int maxSelectCount, boolean voteCanModify) {
+    public VoteConfig(long startTime, long endTime, boolean isMultipleSelect, int minSelectCount, int maxSelectCount, boolean voteCanModify) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isMultipleSelect = isMultipleSelect;
+        this.minSelectCount = minSelectCount;
         this.maxSelectCount = maxSelectCount;
         this.voteCanModify = voteCanModify;
     }
@@ -71,6 +74,14 @@ public class VoteConfig {
         isMultipleSelect = multipleSelect;
     }
 
+    public int getMinSelectCount() {
+        return minSelectCount;
+    }
+
+    public void setMinSelectCount(int minSelectCount) {
+        this.minSelectCount = minSelectCount;
+    }
+
     public int getMaxSelectCount() {
         return maxSelectCount;
     }
@@ -97,6 +108,7 @@ public class VoteConfig {
         if (startTime != that.startTime) return false;
         if (endTime != that.endTime) return false;
         if (isMultipleSelect != that.isMultipleSelect) return false;
+        if (minSelectCount != that.minSelectCount) return false;
         if (maxSelectCount != that.maxSelectCount) return false;
         return voteCanModify == that.voteCanModify;
     }
@@ -106,6 +118,7 @@ public class VoteConfig {
         int result = (int) (startTime ^ (startTime >>> 32));
         result = 31 * result + (int) (endTime ^ (endTime >>> 32));
         result = 31 * result + (isMultipleSelect ? 1 : 0);
+        result = 31 * result + minSelectCount;
         result = 31 * result + maxSelectCount;
         result = 31 * result + (voteCanModify ? 1 : 0);
         return result;
@@ -117,6 +130,7 @@ public class VoteConfig {
                 "\"startTime\": " + startTime +
                 ", \"endTime\": " + endTime +
                 ", \"isMultipleSelect\": " + isMultipleSelect +
+                ", \"minSelectCount\": " + minSelectCount +
                 ", \"maxSelectCount\": " + maxSelectCount +
                 ", \"voteCanModify\": " + voteCanModify +
                 "}";

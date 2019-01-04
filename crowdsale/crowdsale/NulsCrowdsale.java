@@ -38,7 +38,7 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
             //是否关闭
             require(!isFinalized(), "It has been over!");
             //是否达到预定值
-            require(!super.goalReached(), "goal reached!");
+            require(!super.goalReached(), "Goal reached!");
             super.buyTokens(Msg.sender());
             //保存这个地址 存了多少钱
             super.getVault().deposit(Msg.sender());
@@ -56,7 +56,7 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
 
     protected void onlyOwner() {
         // 消息发送者地址
-        require(Msg.sender().equals(owner), "sender is not the owner");
+        require(Msg.sender().equals(owner), "The sender is not the owner.");
     }
 
     /**
@@ -89,11 +89,11 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
     @Payable
     public void buyTokens(Address beneficiary) {
         //众筹归集钱包不能购买代币
-        require(!getWallet().equals(beneficiary), "The address can not buy token");
+        require(!getWallet().equals(beneficiary), "The address can not buy token.");
         //众筹在规定的之间内
         super.onlyWhileOpen();
-        require(!isFinalized(), "finalized!");
-        require(!super.goalReached(), "goal reached!");
+        require(!isFinalized(), "It has been finalized!");
+        require(!super.goalReached(), "Goal reached!");
         super.buyTokens(beneficiary);
         //保存这个地址 存了多少钱
         super.getVault().deposit(beneficiary);
@@ -114,12 +114,12 @@ public class NulsCrowdsale extends RefundableCrowdsale implements Contract {
      */
     public void enableRefunds() {
         onlyOwner();
+        require(isFinalized(), "It hasn't been finalized!");
         super.getVault().enableRefunds();
-        this.finalized();
     }
 
     /**
-     * 退款（给消息发送人） 首先调用 enableRefunds() 处于退款状态后, 然后要wallet钱包给众筹合约地址转账 才能退款
+     * 退款（给消息发送人） 首先调用 finalized() 停止众筹后，再调用 enableRefunds() 处于退款状态后, 然后要wallet钱包给众筹合约地址转账 才能退款
      */
     public void refund() {
         super.claimRefund();

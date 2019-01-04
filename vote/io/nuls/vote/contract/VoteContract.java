@@ -23,10 +23,10 @@ public class VoteContract implements Contract {
     }
 
     @Payable
-    public VoteEntity create(String title, String desc, String[] items, long startTime, long endTime, boolean isMultipleSelect, int maxSelectCount, boolean voteCanModify) {
+    public VoteEntity create(String title, String desc, String[] items, long startTime, long endTime, boolean isMultipleSelect, int minSelectCount, int maxSelectCount, boolean voteCanModify) {
         VoteEntity voteEntity = baseVote.create(title, desc, items);
 
-        VoteConfig config = new VoteConfig(startTime, endTime, isMultipleSelect, maxSelectCount, voteCanModify);
+        VoteConfig config = new VoteConfig(startTime, endTime, isMultipleSelect, minSelectCount, maxSelectCount, voteCanModify);
         boolean success = baseVote.init(voteEntity.getId(), config);
 
         Utils.require(success, "vote init fail");

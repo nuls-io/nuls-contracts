@@ -108,7 +108,7 @@ public class RefundVault {
      * @param investor
      */
     public void deposit(Address investor) {
-        require(state == Active, "state == Active");
+        require(state == Active, "The state must be active.");
         BigInteger value = deposited.get(investor);
         if (value == null) {
             value = BigInteger.ZERO;
@@ -130,7 +130,7 @@ public class RefundVault {
      * 允许退款
      */
     public void enableRefunds() {
-        require(state == Active, "state == Active");
+        require(state == Active, "The state must be active.");
         state = Refunding;
         emit(new RefundsEnabled());
     }
@@ -141,9 +141,9 @@ public class RefundVault {
      * @param investor
      */
     public void refund(Address investor) {
-        require(state == Refunding, "state must be refunding");
+        require(state == Refunding, "The state must be refunding.");
         BigInteger depositedValue = deposited.get(investor);
-        require(depositedValue != null, "This address has not bought token");
+        require(depositedValue != null, "This address has not bought token.");
         require(depositedValue.compareTo(BigInteger.ZERO) > 0, "This address has been refunded.");
         deposited.put(investor, BigInteger.ZERO);
         investor.transfer(depositedValue);

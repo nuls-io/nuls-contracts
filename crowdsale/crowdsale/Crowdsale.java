@@ -172,7 +172,7 @@ public class Crowdsale {
         nulsRaised = nulsRaised.add(nuls);
         //调用  （address）token.call 给beneficiary 代币
         processPurchase(beneficiary, tokens);
-        //发送事件 Msg.sender()创建合约的地址 私钥导入的
+        //发送事件 Msg.sender()创建合约的地址
         emit(new TokenPurchaseEvent(Msg.sender(), beneficiary, nuls, tokens));
 
         updatePurchasingState(beneficiary, nuls);
@@ -188,8 +188,8 @@ public class Crowdsale {
      * @param amount
      */
     protected void preValidatePurchase(Address beneficiary, BigDecimal amount) {
-        require(beneficiary != null, "beneficiary != null");
-        require(amount != null && amount.compareTo(BigDecimal.ZERO) > 0, "amount require and amount must be greater than 0");
+        require(beneficiary != null, "The eneficiary can not be empty.");
+        require(amount != null && amount.compareTo(BigDecimal.ZERO) > 0, "Amount require and it must be greater than 0.");
     }
 
     protected void postValidatePurchase(Address beneficiary, BigDecimal amount) {

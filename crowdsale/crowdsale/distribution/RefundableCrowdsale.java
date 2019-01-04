@@ -28,11 +28,11 @@ public abstract class RefundableCrowdsale extends FinalizableCrowdsale {
 
     protected RefundableCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token, BigDecimal goal) {
         super(openingTime, closingTime, rate, wallet, token);
-        require(goal.compareTo(BigDecimal.ZERO) > 0, "Goal amount must be greater than 0");
+        require(goal.compareTo(BigDecimal.ZERO) > 0, "Goal amount must be greater than 0!");
+        require(goal.compareTo(BigDecimal.ONE.scaleByPowerOfTen(8)) <= 0, "Goal amount must be lower than 100,000,000!");
         vault = new RefundVault(wallet);
         this.goal = goal;
     }
-
 
     protected void claimRefund() {
         //没有结束

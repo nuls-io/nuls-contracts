@@ -32,8 +32,8 @@ public class TimedCrowdsale extends Crowdsale {
 
     protected TimedCrowdsale(long openingTime, long closingTime, BigDecimal rate, Address wallet, Address token) {
         super(rate, wallet, token);
-        require(openingTime <= closingTime, "open time should be lower than close time");
-        require(closingTime >= Block.timestamp(), "close time cant't be lower than now");
+        require(openingTime <= closingTime, "Open time should be lower than close time.");
+        require(closingTime >= Block.timestamp(), "Close time cant't be lower than now.");
 
         this.openingTime = openingTime;
         this.closingTime = closingTime;
