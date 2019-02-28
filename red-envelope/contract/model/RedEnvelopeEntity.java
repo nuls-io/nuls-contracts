@@ -7,7 +7,11 @@ import io.nuls.contract.sdk.Address;
 import java.util.Map;
 
 /**
- * model
+ * Red envelope instance
+ *
+ * @author captain
+ * @version 1.0
+ * @date 19-1-31 下午12:48
  */
 public class RedEnvelopeEntity {
     private Long id;//primary key

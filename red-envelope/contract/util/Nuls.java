@@ -1,5 +1,12 @@
 package contract.util;
 
+/**
+ * Indicates the amount
+ *
+ * @author captain
+ * @version 1.0
+ * @date 19-1-31 下午12:49
+ */
 public class Nuls {
 
     private long value;
@@ -16,44 +23,44 @@ public class Nuls {
         this.value = value;
     }
 
-    public Nuls plus(Nuls na){
+    public Nuls plus(Nuls na) {
         return Nuls.valueOf(this.value + na.value);
     }
 
-    public Nuls plus(long value){
+    public Nuls plus(long value) {
         return Nuls.valueOf(this.value + value);
     }
 
-    public Nuls minus(Nuls na){
+    public Nuls minus(Nuls na) {
         return Nuls.valueOf(this.value - na.value);
     }
 
-    public Nuls minus(long value){
+    public Nuls minus(long value) {
         return Nuls.valueOf(this.value - value);
     }
 
-    public Nuls multiply(Nuls na){
+    public Nuls multiply(Nuls na) {
         return Nuls.valueOf(this.value * na.value);
     }
 
-    public Nuls multiply(long value){
+    public Nuls multiply(long value) {
         return Nuls.valueOf(this.value * value);
     }
 
-    public Nuls divide(Nuls na){
+    public Nuls divide(Nuls na) {
         return Nuls.valueOf(this.value / na.value);
     }
 
-    public Nuls divide(long value){
+    public Nuls divide(long value) {
         return Nuls.valueOf(this.value / value);
     }
 
-    public boolean larger(Nuls na){
-        return  this.value > na.value;
+    public boolean larger(Nuls na) {
+        return this.value > na.value;
     }
 
-    public boolean smaller(Nuls na){
-        return  this.value < na.value;
+    public boolean smaller(Nuls na) {
+        return this.value < na.value;
     }
 
     public long value() {

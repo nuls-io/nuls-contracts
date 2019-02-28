@@ -8,6 +8,13 @@ import io.nuls.contract.sdk.annotation.View;
 
 import java.util.List;
 
+/**
+ * Red envelope contract abstract interface
+ *
+ * @author captain
+ * @version 1.0
+ * @date 19-1-31 下午12:47
+ */
 public interface RedEnvelopeInterface {
 
     @Payable

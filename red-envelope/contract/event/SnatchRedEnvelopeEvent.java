@@ -4,6 +4,13 @@ import contract.util.Nuls;
 import io.nuls.contract.sdk.Address;
 import io.nuls.contract.sdk.Event;
 
+/**
+ * The event is posted when someone grabbed the red envelope
+ *
+ * @author captain
+ * @version 1.0
+ * @date 19-1-31 下午12:46
+ */
 public class SnatchRedEnvelopeEvent implements Event {
     private Long id;
     private Address snatcher;

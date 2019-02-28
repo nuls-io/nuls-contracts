@@ -6,10 +6,7 @@ import contract.func.RedEnvelopeInterface;
 import contract.model.RedEnvelopeEntity;
 import contract.util.Nuls;
 import contract.util.RedEnvelopeManager;
-import io.nuls.contract.sdk.Address;
-import io.nuls.contract.sdk.Block;
-import io.nuls.contract.sdk.Contract;
-import io.nuls.contract.sdk.Msg;
+import io.nuls.contract.sdk.*;
 import io.nuls.contract.sdk.annotation.Payable;
 import io.nuls.contract.sdk.annotation.Required;
 import io.nuls.contract.sdk.annotation.View;
@@ -20,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static contract.func.RedEnvelopeConstant.*;
+import static contract.func.Constant.*;
 import static io.nuls.contract.sdk.Utils.emit;
 import static io.nuls.contract.sdk.Utils.require;
 
@@ -94,6 +91,7 @@ public class RedEnvelopeContract implements Contract, RedEnvelopeInterface {
     public RedEnvelopeEntity detailInfo(@Required Long id) {
         RedEnvelopeEntity entity = map.get(id);
         require(entity != null, "The specified RedEnvelope not exists");
+        require(!entity.getAvailable(), "The red envelope must be robbed over before you can view the details.");
         return entity;
     }
 
@@ -102,10 +100,7 @@ public class RedEnvelopeContract implements Contract, RedEnvelopeInterface {
     public Boolean availableInfo(@Required Long id) {
         RedEnvelopeEntity entity = map.get(id);
         require(entity != null, "The specified RedEnvelope not exists");
-        if (Block.number() - entity.getInitialHeight() > UNAVAILABLE_HEIGHT) {
-            return false;
-        }
-        return true;
+        return Block.number() - entity.getInitialHeight() <= UNAVAILABLE_HEIGHT;
     }
 
     @View

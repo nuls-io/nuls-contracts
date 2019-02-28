@@ -4,6 +4,13 @@ import contract.model.RedEnvelopeEntity;
 import io.nuls.contract.sdk.Address;
 import io.nuls.contract.sdk.Event;
 
+/**
+ * The event is posted when someone sends a new red envelope
+ *
+ * @author captain
+ * @version 1.0
+ * @date 19-1-31 下午12:43
+ */
 public class NewRedEnvelopeEvent implements Event {
 
     private Long initHeight;
