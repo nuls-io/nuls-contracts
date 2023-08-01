@@ -4,11 +4,9 @@ import io.nuls.contract.event.CrossChainTokenTransferInEvent;
 import io.nuls.contract.event.CrossChainTokenTransferOutEvent;
 import io.nuls.contract.model.NRC20Amount;
 import io.nuls.contract.ownable.Ownable;
-import io.nuls.contract.sdk.Address;
-import io.nuls.contract.sdk.Contract;
-import io.nuls.contract.sdk.Msg;
-import io.nuls.contract.sdk.Utils;
+import io.nuls.contract.sdk.*;
 import io.nuls.contract.sdk.annotation.Payable;
+import io.nuls.contract.sdk.annotation.PayableMultyAsset;
 import io.nuls.contract.sdk.annotation.Required;
 import io.nuls.contract.sdk.annotation.View;
 
@@ -31,7 +29,7 @@ public class CrossTokenSystemContract extends Ownable implements Contract {
     /**
      * 合约资产跨链转出时调用的方法
      */
-    @Payable
+    @PayableMultyAsset
     public boolean onNRC20Received(@Required Address from, @Required String to, @Required BigInteger value) {
         Address nrc20 = Msg.sender();
         // 检查转出人对系统合约的token授权额度
@@ -55,11 +53,14 @@ public class CrossTokenSystemContract extends Ownable implements Contract {
         } else {
             nrc20Amount.addValue(value);
         }
-        BigInteger fromTransferIn = Msg.value();
+        MultyAssetValue[] multyAssetValues = Msg.multyAssetValues();
+        require(multyAssetValues != null && multyAssetValues.length == 1, "Insufficient fees paid for cross-chain transfers[0]");
+        MultyAssetValue nulsValue = multyAssetValues[0];
+        BigInteger fromTransferIn = nulsValue.getValue();
         BigInteger refund = fromTransferIn.subtract(txFee);
-        require(refund.compareTo(BigInteger.ZERO) >= 0, "Insufficient fees paid for cross-chain transfers");
+        require(refund.compareTo(BigInteger.ZERO) >= 0, "Insufficient fees paid for cross-chain transfers[1]");
         // 退还剩余的费用
-        from.transfer(refund);
+        from.transfer(refund, nulsValue.getAssetChainId(), nulsValue.getAssetId());
         // 发出合约资产跨链转出事件
         Utils.emit(new CrossChainTokenTransferOutEvent(txHash, nrc20, from, to, value, chainId, assetsId));
         return true;

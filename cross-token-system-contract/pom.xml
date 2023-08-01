@@ -52,7 +52,7 @@
 								<!-- server port -->
 								<argument>18081</argument>
 								<!-- whether to launch the server -->
-								<argument>false</argument>
+								<argument>true</argument>
 							</arguments>
 						</configuration>
 					</execution>

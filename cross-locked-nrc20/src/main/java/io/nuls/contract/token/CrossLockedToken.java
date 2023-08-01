@@ -2,6 +2,7 @@ package io.nuls.contract.token;
 
 import io.nuls.contract.sdk.*;
 import io.nuls.contract.sdk.annotation.Payable;
+import io.nuls.contract.sdk.annotation.PayableMultyAsset;
 import io.nuls.contract.sdk.annotation.Required;
 import io.nuls.contract.sdk.annotation.View;
 
@@ -226,7 +227,7 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
      * @param value 转账金额
      * @return
      */
-    @Payable
+    @PayableMultyAsset
     public boolean transferCrossChain(@Required String to, @Required BigInteger value) {
         Address from = Msg.sender();
         // 授权系统合约可使用转出者的token资产(跨链部分)
@@ -238,7 +239,7 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
                 new String[]{from.toString()},
                 new String[]{to},
                 new String[]{value.toString()}};
-        String returnValue = crossTokenSystemContract().callWithReturnValue(methodName, null, args, Msg.value());
+        String returnValue = crossTokenSystemContract().callWithReturnValue(methodName, null, args, BigInteger.ZERO, Msg.multyAssetValues());
         return Boolean.parseBoolean(returnValue);
     }
 
