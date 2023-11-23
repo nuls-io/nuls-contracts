@@ -107,6 +107,7 @@ public class NRC1155Base extends NRC165Base implements INRC1155 {
     }
 
     @Override
+    @View
     public boolean isApprovedForAll(Address _owner, Address _operator) {
         return _operatorApprovalsOf(_owner, _operator);
     }
