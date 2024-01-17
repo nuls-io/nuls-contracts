@@ -15,9 +15,7 @@ import static io.nuls.contract.sdk.Utils.require;
  */
 public class Ownable {
 
-    /**
-     * 合约创建者
-     */
+
     protected Address contractCreator;
 
     protected Address owner;
@@ -43,8 +41,7 @@ public class Ownable {
     }
 
     /**
-     * 转让合约所有权
-     *
+     * 
      * @param newOwner
      */
     public void transferOwnership(Address newOwner) {
@@ -54,15 +51,10 @@ public class Ownable {
         owner = newOwner;
     }
 
-    /**
-     * 转移owner
-     */
     class OwnershipTransferredEvent implements Event {
 
-        //先前拥有者
         private Address previousOwner;
 
-        //新的拥有者
         private Address newOwner;
 
         public OwnershipTransferredEvent(Address previousOwner, Address newOwner) {
