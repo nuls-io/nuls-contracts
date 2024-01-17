@@ -1,4 +1,4 @@
-# NULS Contracts Example
+# NULS Contract Examples
 
 The warehouse stores the smart contract code templates that community partners have written, which can be modified, used, and learned after downloading.
 
