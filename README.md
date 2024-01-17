@@ -41,7 +41,7 @@ Modules added in the future may be release under different license, will specifi
 - Website: https://nuls.io
 - Twitter: https://twitter.com/nuls
 - Discord:https://discord.gg/aRCwbj47WN
-- Telegram: https://t.me/Nulsio)
+- Telegram: https://t.me/Nulsio
 - Medium: https://nuls.medium.com
 - Forum: https://forum.nuls.io
 - GitHub: https://github.com/nuls-io
