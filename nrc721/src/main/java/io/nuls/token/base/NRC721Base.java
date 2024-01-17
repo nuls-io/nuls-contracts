@@ -73,7 +73,7 @@ public class NRC721Base extends NRC165Base implements INRC721 {
     @Override
     public void safeTransferFrom(@Required Address from, @Required Address to, @Required BigInteger tokenId, @Required String data) {
         transferFrom(from, to, tokenId);
-        // checkOnNRC721Received 的作用是当to是合约地址时，那么to这个合约必须实现`onNRC721Received`函数 / data 的作用是附加备注
+        // The function of checkOnNRC721Received is that when to is the contract address, then the contract to must implement the `onNRC721Received` function / The function of data is to add remarks
         require(checkOnNRC721Received(from, to, tokenId, data), "NRC721: transfer to non NRC721Receiver implementer");
 
     }
