@@ -54,6 +54,7 @@ public class Ownable {
      */
     public void transferOwnership(Address newOwner) {
         onlyOwner();
+        require(newOwner != null, "empty newOwner");
         emit(new OwnershipTransferredEvent(owner, newOwner));
         owner = newOwner;
     }

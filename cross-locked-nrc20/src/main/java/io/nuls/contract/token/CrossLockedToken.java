@@ -23,11 +23,16 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
     private Map<Address, BigInteger> balances = new HashMap<Address, BigInteger>();
     private Map<Address, Map<Address, BigInteger>> allowed = new HashMap<Address, Map<Address, BigInteger>>();
 
-    private Map<Address,Map<Long,BigInteger>> lockedBalances=new HashMap<Address,Map<Long,BigInteger>>();
+    private Map<Address, Map<Long, BigInteger>> lockedBalances = new HashMap<Address, Map<Long, BigInteger>>();
     /**
      * token跨链系统处理合约
      */
     private Address CROSS_TOKEN_SYSTEM_CONTRACT;
+
+    @Payable
+    public void _payable() {
+        this.deposit(Msg.value());
+    }
 
     @Override
     @View
@@ -57,7 +62,7 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
         this.name = name;
         this.symbol = symbol;
         this.decimals = decimals;
-        totalSupply = initialAmount.multiply(BigInteger.TEN.pow(decimals));;
+        totalSupply = initialAmount.multiply(BigInteger.TEN.pow(decimals));
         balances.put(Msg.sender(), totalSupply);
         emit(new TransferEvent(null, Msg.sender(), totalSupply));
     }
@@ -87,13 +92,14 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
 
     /**
      * 从指定地址批量转账
+     *
      * @param from
      * @param targets
      * @param values
      * @return
      */
     public boolean batchTransferFrom(@Required Address from, @Required String[] targets, @Required long[] values) {
-        checkBatchData(targets,values);
+        checkBatchData(targets, values);
         for (int i = 0; i < targets.length; i++) {
             Address to = new Address(targets[i]);
             BigInteger value = BigInteger.valueOf(values[i]);
@@ -121,6 +127,7 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
 
     /**
      * 查询账户锁定的Token数量
+     *
      * @param owner
      * @return
      */
@@ -130,11 +137,11 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
         //先检查锁定的Token是否可用
         updateLockedBalance(owner);
         BigInteger balance = BigInteger.ZERO;
-        Map<Long,BigInteger> lockedBalance = lockedBalances.get(owner);
-        if(lockedBalance!=null && lockedBalance.size()>0){
-            Iterator<BigInteger> iter=lockedBalance.values().iterator();
-            while (iter.hasNext()){
-                balance=balance.add(iter.next());
+        Map<Long, BigInteger> lockedBalance = lockedBalances.get(owner);
+        if (lockedBalance != null && lockedBalance.size() > 0) {
+            Iterator<BigInteger> iter = lockedBalance.values().iterator();
+            while (iter.hasNext()) {
+                balance = balance.add(iter.next());
             }
         }
 
@@ -153,12 +160,13 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
 
     /**
      * 批量转账
+     *
      * @param targets
      * @param values
      * @return
      */
     public boolean batchTransfer(@Required String[] targets, @Required long[] values) {
-        checkBatchData(targets,values);
+        checkBatchData(targets, values);
         for (int i = 0; i < targets.length; i++) {
             Address to = new Address(targets[i]);
             BigInteger value = BigInteger.valueOf(values[i]);
@@ -171,18 +179,19 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
 
     /**
      * 带锁定高度的转账
+     *
      * @param to
      * @param value
      * @param lockedTime，为0表示不锁定
      * @return
      */
-    public boolean transferLocked(@Required Address to, @Required BigInteger value,@Required long lockedTime){
+    public boolean transferLocked(@Required Address to, @Required BigInteger value, @Required long lockedTime) {
         subtractBalance(Msg.sender(), value);
-        if(Block.timestamp()>=lockedTime){
+        if (Block.timestamp() >= lockedTime) {
             addBalance(to, value);
-        }else{
+        } else {
             //锁定中......
-            addLockedBalance(to,value,lockedTime);
+            addLockedBalance(to, value, lockedTime);
         }
         emit(new TransferEvent(Msg.sender(), to, value));
         return true;
@@ -222,7 +231,8 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
 
     /**
      * token跨链转账
-     * @param to 平行链地址
+     *
+     * @param to    平行链地址
      * @param value 转账金额
      * @return
      */
@@ -286,6 +296,7 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
 
     /**
      * 添加锁定记录
+     *
      * @param address
      * @param value
      * @param lockedTime
@@ -297,33 +308,34 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
         updateLockedBalance(address);
 
         check(value, "The value must be greater than or equal to 0.");
-        Map<Long,BigInteger> lockedBalance = lockedBalances.get(address);
-        if(lockedBalance==null){
-            lockedBalance=new HashMap<Long,BigInteger>();
+        Map<Long, BigInteger> lockedBalance = lockedBalances.get(address);
+        if (lockedBalance == null) {
+            lockedBalance = new HashMap<Long, BigInteger>();
         }
-        if(lockedBalance.containsKey(lockedTime)){
-            BigInteger initBalance =lockedBalance.get(lockedTime);
+        if (lockedBalance.containsKey(lockedTime)) {
+            BigInteger initBalance = lockedBalance.get(lockedTime);
             check(initBalance);
-            lockedBalance.put(lockedTime,initBalance.add(value));
-        }else{
-            lockedBalance.put(lockedTime,value);
+            lockedBalance.put(lockedTime, initBalance.add(value));
+        } else {
+            lockedBalance.put(lockedTime, value);
         }
-        lockedBalances.put(address,lockedBalance);
+        lockedBalances.put(address, lockedBalance);
     }
 
     /**
      * 检查锁定的Token是否达到可用
+     *
      * @param address
      */
-    private void updateLockedBalance(Address address){
-        long currentTime=Block.timestamp();
-        Map<Long,BigInteger> lockedBalance = lockedBalances.get(address);
-        if(lockedBalance!=null &&lockedBalance.size()>0){
-            Iterator<Long> iter=lockedBalance.keySet().iterator();
-            while (iter.hasNext()){
-                long lockedTime=iter.next();
-                if(currentTime>=lockedTime){
-                    BigInteger availBalance=lockedBalance.get(lockedTime);
+    private void updateLockedBalance(Address address) {
+        long currentTime = Block.timestamp();
+        Map<Long, BigInteger> lockedBalance = lockedBalances.get(address);
+        if (lockedBalance != null && lockedBalance.size() > 0) {
+            Iterator<Long> iter = lockedBalance.keySet().iterator();
+            while (iter.hasNext()) {
+                long lockedTime = iter.next();
+                if (currentTime >= lockedTime) {
+                    BigInteger availBalance = lockedBalance.get(lockedTime);
                     BigInteger balance = balances.get(address);
                     if (balance == null) {
                         balance = BigInteger.ZERO;
@@ -355,14 +367,44 @@ public class CrossLockedToken extends Ownable implements Contract, Token {
         require(value1.compareTo(value2) >= 0, msg);
     }
 
-    private void checkBatchData(String[] targets, long[] values){
-        require(targets.length==values.length,"The number of addresses and amounts for batch transfer should be the same");
+    private void checkBatchData(String[] targets, long[] values) {
+        require(targets.length == values.length, "The number of addresses and amounts for batch transfer should be the same");
     }
 
     private Address crossTokenSystemContract() {
-        if(CROSS_TOKEN_SYSTEM_CONTRACT == null) {
+        if (CROSS_TOKEN_SYSTEM_CONTRACT == null) {
             loadCrossTokenSystemContract();
         }
         return CROSS_TOKEN_SYSTEM_CONTRACT;
+    }
+
+    @Payable
+    public boolean deposit(BigInteger v) {
+        BigInteger val = Msg.value();
+        Utils.require(val.compareTo(BigInteger.ZERO) > 0 && val.compareTo(v) >= 0, "wNULS: Value is invalid");
+        BigInteger bL;
+        if (this.balances.get(Msg.sender()) != null) {
+            BigInteger iv = this.balances.get(Msg.sender());
+            bL = iv.add(val);
+        } else {
+            bL = val;
+        }
+
+        this.totalSupply = this.totalSupply.add(val);
+        this.balances.put(Msg.sender(), bL);
+        Utils.emit(new TransferEvent(null, Msg.sender(), val));
+        return true;
+    }
+
+    public boolean withdraw(BigInteger wad, Address recipient) {
+        Utils.require(recipient != null, "Destination is invalid");
+        BigInteger bOf = this.balances.get(Msg.sender());
+        Utils.require(bOf.compareTo(wad) >= 0, "Balance lower than the amount you want to transfer");
+        this.totalSupply = this.totalSupply.subtract(wad);
+        BigInteger bOfWad = bOf.subtract(wad);
+        this.balances.put(Msg.sender(), bOfWad);
+        recipient.transfer(wad);
+        Utils.emit(new TransferEvent(Msg.sender(), null, wad));
+        return true;
     }
 }
