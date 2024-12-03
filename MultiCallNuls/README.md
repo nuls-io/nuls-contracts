@@ -54,7 +54,7 @@
     - ["tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG,tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP:tNULSeBaN3uYkVi8bY7qUsTrQSYLbgBuZvfmcN:tNULSeBaMyCzpjWfk4Y4EfGaQq9z72C12GLRpy::tNULSeBaMxCJQwsXpY3xfo6nwY3k8tRacs9pBH:","","nuls,2","","","tNULSeBaMqrByvidryVtysy1WKEkDPZTeazymf","0","1"]
 
     - Result
-        - ```["[\"2621995600000\",\"360000000\",\"9000000\",\"38591740726975\",\"3000000\"]","2098411403","500000000000","nulsDomain","NULSDOMAIN","{\"mainDomain\":\"zz.nuls\",\"uri\":null,\"pub\":null,\"activeDomains\":[\"zz.nuls\"],\"inactiveDomains\":[],\"received\":\"0\",\"pending\":\"0\",\"rewardDebt\":\"0\"}","tNULSeBaMoKW8Ktk6pDt4HeravsQXxMXXxFQy8","tNULSeBaMqrByvidryVtysy1WKEkDPZTeazymf"]
-```
+        - `["[\"2621995600000\",\"360000000\",\"9000000\",\"38591740726975\",\"3000000\"]","2098411403","500000000000","nulsDomain","NULSDOMAIN","{\"mainDomain\":\"zz.nuls\",\"uri\":null,\"pub\":null,\"activeDomains\":[\"zz.nuls\"],\"inactiveDomains\":[],\"received\":\"0\",\"pending\":\"0\",\"rewardDebt\":\"0\"}","tNULSeBaMoKW8Ktk6pDt4HeravsQXxMXXxFQy8","tNULSeBaMqrByvidryVtysy1WKEkDPZTeazymf"]
+`
     
 
