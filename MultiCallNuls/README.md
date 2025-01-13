@@ -56,5 +56,10 @@
     - Result
         - `["[\"2621995600000\",\"360000000\",\"9000000\",\"38591740726975\",\"3000000\"]","2098411403","500000000000","nulsDomain","NULSDOMAIN","{\"mainDomain\":\"zz.nuls\",\"uri\":null,\"pub\":null,\"activeDomains\":[\"zz.nuls\"],\"inactiveDomains\":[],\"received\":\"0\",\"pending\":\"0\",\"rewardDebt\":\"0\"}","tNULSeBaMoKW8Ktk6pDt4HeravsQXxMXXxFQy8","tNULSeBaMqrByvidryVtysy1WKEkDPZTeazymf"]
 `
-    
+
+### Multicall Contract Address
+
+> Multicall Address On The Testnet: tNULSeBaMwP81fGuNPRRSpKxLto1o1hQPnUTJQ
+>
+> Multicall Address On The Mainnet: NULSd6Hgrnv1oxcdyhzZmsu7HWgk7vcaR6nMR
 
