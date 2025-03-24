@@ -102,4 +102,56 @@ public class MultiCallNuls implements Contract {
         return result;
     }
 
+    @JSONSerializable
+    @View
+    public String[] userTokenBalancesAndAssetAvailable(String user, String[] nrc20s) {
+        int addrLength = user.length();
+        int length = nrc20s.length;
+        String[] result = new String[length];
+        String nrc20, balance;
+        for (int i = 0; i < length; i++) {
+            nrc20 = nrc20s[i];
+            int nrc20Len = nrc20.length();
+            if (nrc20Len == 0) {
+                balance = new Address(user).balance().toString();
+            } else if (nrc20Len < addrLength) {
+                String[] split = nrc20.split("-");
+                balance = new Address(user).balance(
+                        Integer.parseInt(split[0]),
+                        Integer.parseInt(split[1])
+                ).toString();
+            } else {
+                balance = new Address(nrc20).callWithReturnValue("balanceOf", null, new String[][]{new String[]{user}}, BigInteger.ZERO);
+            }
+            result[i] = balance;
+        }
+        return result;
+    }
+
+    @JSONSerializable
+    @View
+    public String[] userTokenBalancesAndAssetTotal(String user, String[] nrc20s) {
+        int addrLength = user.length();
+        int length = nrc20s.length;
+        String[] result = new String[length];
+        String nrc20, balance;
+        for (int i = 0; i < length; i++) {
+            nrc20 = nrc20s[i];
+            int nrc20Len = nrc20.length();
+            if (nrc20Len == 0) {
+                balance = new Address(user).totalBalance().toString();
+            } else if (nrc20Len < addrLength) {
+                String[] split = nrc20.split("-");
+                balance = new Address(user).totalBalance(
+                        Integer.parseInt(split[0]),
+                        Integer.parseInt(split[1])
+                ).toString();
+            } else {
+                balance = new Address(nrc20).callWithReturnValue("balanceOf", null, new String[][]{new String[]{user}}, BigInteger.ZERO);
+            }
+            result[i] = balance;
+        }
+        return result;
+    }
+
 }

@@ -63,3 +63,16 @@
 >
 > Multicall Address On The Mainnet: NULSd6Hgrnv1oxcdyhzZmsu7HWgk7vcaR6nMR
 
+### Contract address updated on March 24, 2025 at 22:20:15
+
+> Multicall Address On The Testnet: tNULSeBaNBvS52PkAubbRDeKPqwB75VQntorBY
+>
+> Multicall Address On The Mainnet: NULSd6HgtpqAdEGKLqRZ2H1sxDT6eGbGFJRJg
+
+_Added two methods to query the balances of multiple NRC20 assets or cross-chain assets of one user_
+
+- userTokenBalancesAndAssetAvailable (String user, String[] nrc20s) return String[]
+  - Available balance of NRC20 assets and available balance of cross-chain assets
+- userTokenBalancesAndAssetTotal (String user, String[] nrc20s) return String[]
+  - Available balance of NRC20 assets and total balance of cross-chain assets
+
